@@ -1,36 +1,170 @@
 <!doctype html>
 <html lang="es">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Control de facturas por Ruta</title>
   <style>
-    :root{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;}
-    body{margin:0;background:#f5f7fb;color:#111;}
-    header{background:#c53030;color:#fff;padding:18px 24px;border-bottom:4px solid rgba(0,0,0,0.06)}
-    .container{display:flex;gap:18px;padding:18px;max-width:1200px;margin:20px auto}
-    .panel{background:#fff;border-radius:12px;padding:16px;box-shadow:0 6px 18px rgba(16,24,40,0.06);flex:1}
-    .left{min-width:350px;max-width:420px}
-    h1{margin:0 0 6px;font-size:18px}
-    label{display:block;margin-top:8px;font-size:13px}
-    input[type=file]{display:block;margin-top:6px}
-    .dropzone{margin-top:10px;padding:18px;border:2px dashed #cbd5e1;border-radius:8px;text-align:center;color:#64748b;cursor:pointer}
-    .dropzone.dragover{background:#eef2ff;border-color:#7c3aed;color:#2b2b2b}
-    .route-list{margin-top:12px;display:flex;flex-direction:column;gap:10px;max-height:600px;overflow:auto}
-    .route-card{border:1px solid #f9d6d6;padding:10px;border-radius:8px}
-    table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}
-    th,td{padding:8px;border-bottom:1px solid #eef2ff;text-align:left}
-    th{background:#fbfdff;font-weight:600}
-    .status{display:inline-block;padding:6px 8px;border-radius:8px;font-size:12px}
-    .status.missing{background:#fff4e6;color:#b45309;border:1px solid #fde3b7}
-    .status.ok{background:#ecfdf5;color:#065f46;border:1px solid #bbf7d0}
-    .btn{display:inline-block;padding:8px 12px;border-radius:8px;background:#c53030;color:#fff;text-decoration:none;border:none;cursor:pointer}
-    .btn.ghost{background:transparent;color:#c53030;border:1px solid #f4c7c7}
-    .small{font-size:12px;padding:6px 8px}
-    footer{max-width:1200px;margin:12px auto;text-align:center;color:#6b7280}
-    .note{font-size:13px;color:#374151}
+    :root {
+      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+
+    body {
+      margin: 0;
+      background: #f5f7fb;
+      color: #111;
+    }
+
+    header {
+      background: #c53030;
+      color: #fff;
+      padding: 18px 24px;
+      border-bottom: 4px solid rgba(0, 0, 0, 0.06)
+    }
+
+    .container {
+      display: flex;
+      gap: 18px;
+      padding: 18px;
+      max-width: 1200px;
+      margin: 20px auto
+    }
+
+    .panel {
+      background: #fff;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 6px 18px rgba(16, 24, 40, 0.06);
+      flex: 1
+    }
+
+    .left {
+      min-width: 350px;
+      max-width: 420px
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 18px
+    }
+
+    label {
+      display: block;
+      margin-top: 8px;
+      font-size: 13px
+    }
+
+    input[type=file] {
+      display: block;
+      margin-top: 6px
+    }
+
+    .dropzone {
+      margin-top: 10px;
+      padding: 18px;
+      border: 2px dashed #cbd5e1;
+      border-radius: 8px;
+      text-align: center;
+      color: #64748b;
+      cursor: pointer
+    }
+
+    .dropzone.dragover {
+      background: #eef2ff;
+      border-color: #7c3aed;
+      color: #2b2b2b
+    }
+
+    .route-list {
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 600px;
+      overflow: auto
+    }
+
+    .route-card {
+      border: 1px solid #f9d6d6;
+      padding: 10px;
+      border-radius: 8px
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 13px
+    }
+
+    th,
+    td {
+      padding: 8px;
+      border-bottom: 1px solid #eef2ff;
+      text-align: left
+    }
+
+    th {
+      background: #fbfdff;
+      font-weight: 600
+    }
+
+    .status {
+      display: inline-block;
+      padding: 6px 8px;
+      border-radius: 8px;
+      font-size: 12px
+    }
+
+    .status.missing {
+      background: #fff4e6;
+      color: #b45309;
+      border: 1px solid #fde3b7
+    }
+
+    .status.ok {
+      background: #ecfdf5;
+      color: #065f46;
+      border: 1px solid #bbf7d0
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: #c53030;
+      color: #fff;
+      text-decoration: none;
+      border: none;
+      cursor: pointer
+    }
+
+    .btn.ghost {
+      background: transparent;
+      color: #c53030;
+      border: 1px solid #f4c7c7
+    }
+
+    .small {
+      font-size: 12px;
+      padding: 6px 8px
+    }
+
+    footer {
+      max-width: 1200px;
+      margin: 12px auto;
+      text-align: center;
+      color: #6b7280
+    }
+
+    .note {
+      font-size: 13px;
+      color: #374151
+    }
   </style>
 </head>
+
 <body>
   <header>
     <h1>Control de facturas por Ruta — subir, comprobar y agrupar</h1>
@@ -41,7 +175,10 @@
       <div>
         <label for="xlsxInput">1) Cargar archivo Excel (.xlsx) de Urbantz -> tareas</label>
         <input id="xlsxInput" type="file" accept=".xlsx" />
-        <div class="note">Son imprescindibles las columnas: <strong>Transportista</strong>, <strong>Ruta</strong>, <strong>Identificador de tarea</strong>, <strong>Representante del cliente</strong>. No confundir identificador de tarea con "de la tarea".</div>
+        <div class="note">Son imprescindibles las columnas: <strong>Transportista</strong>, <strong>Ruta</strong>,
+          <strong>Identificador de tarea</strong>, <strong>Representante del cliente</strong>. No confundir
+          identificador de tarea con "de la tarea".
+        </div>
       </div>
 
       <div style="margin-top:12px">
@@ -61,7 +198,8 @@
         <ol>
           <li>Carga el .xlsx con las columnas mencionadas.</li>
           <li>Se mostrarán tablas por cada Ruta encontradas en el Excel.</li>
-          <li>Arrastra los PDFs: el sistema buscará el "Pedido de ventas" dentro del texto del PDF y marcará la fila como subido si coincide.</li>
+          <li>Arrastra los PDFs: el sistema buscará el "Pedido de ventas" dentro del texto del PDF y marcará la fila
+            como subido si coincide.</li>
           <li>Se almacenará temporalmente para agrupar por Ruta.</li>
           <li>Puedes descargar un único PDF por Ruta, con la ruta escrita en la parte superior de cada hoja.</li>
         </ol>
@@ -99,15 +237,15 @@
 
     xlsxInput.addEventListener('change', async (e) => {
       const f = e.target.files[0];
-      if(!f) return;
+      if (!f) return;
       const data = await f.arrayBuffer();
-      const workbook = XLSX.read(data, {type:'array'});
+      const workbook = XLSX.read(data, { type: 'array' });
       const sheetName = workbook.SheetNames[0];
-      const aoa = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], {defval:''});
+      const aoa = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { defval: '' });
       processExcelRows(aoa);
     });
 
-    function processExcelRows(aoa){
+    function processExcelRows(aoa) {
       // reset
       rows = [];
       routeMap.clear();
@@ -115,9 +253,9 @@
       routesContainer.innerHTML = '';
 
       // Validate presence of required columns
-      const required = ['Transportista','Ruta','Identificador de tarea','Representante del cliente'];
+      const required = ['Transportista', 'Ruta', 'Identificador de tarea', 'Representante del cliente'];
       const missingColumns = required.filter(c => !(c in aoa[0]));
-      if(missingColumns.length){
+      if (missingColumns.length) {
         alert('Faltan columnas en el Excel: ' + missingColumns.join(', '));
         return;
       }
@@ -128,45 +266,58 @@
           Ruta: r['Ruta'],
           Identificador: String(r['Identificador de tarea']).trim(),
           Representante: r['Representante del cliente'],
-          uploaded: false,
-          pdfs: []
+          uploadedFactura: false,
+          uploadedAlbaran: false,
+          pdfsFactura: [],
+          pdfsAlbaran: []
         };
         rows.push(item);
-        if(!routeMap.has(item.Ruta)) routeMap.set(item.Ruta, []);
-        routeMap.get(item.Ruta).push(rows.length-1);
+        if (!routeMap.has(item.Ruta)) routeMap.set(item.Ruta, []);
+        routeMap.get(item.Ruta).push(rows.length - 1);
       });
 
       renderRouteTables();
     }
 
-    function renderRouteTables(){
+    function renderRouteTables() {
       routesContainer.innerHTML = '';
-      for(const [ruta, idxs] of routeMap.entries()){
+      for (const [ruta, idxs] of routeMap.entries()) {
         const card = document.createElement('div');
         card.className = 'route-card';
         card.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center">
           <strong>Ruta: ${ruta}</strong>
           <div>
-            <button class="btn small" data-ruta="${encodeURIComponent(ruta)}">Descargar PDF (agrupar)</button>
+            <div>
+              <button class="btn small dl-all" data-ruta="${encodeURIComponent(ruta)}">Descargar TODO</button>
+              <button class="btn small ghost dl-factura" data-ruta="${encodeURIComponent(ruta)}">Solo FACTURAS</button>
+              <button class="btn small ghost dl-albaran" data-ruta="${encodeURIComponent(ruta)}">Solo ALBARANES</button>
+            </div>
           </div>
         </div>
         <table data-ruta="${encodeURIComponent(ruta)}">
           <thead>
-            <tr><th>Transportista</th><th>Identificador</th><th>Representante</th><th>Estado</th></tr>
+            <tr><th>Transportista</th><th>Identificador</th><th>Representante</th><th>Factura</th><th>Albarán</th></tr>
           </thead>
           <tbody></tbody>
         </table>`;
+        card.querySelector('.dl-all').addEventListener('click', () => downloadGroupedRuta(ruta, "ALL"));
+        card.querySelector('.dl-factura').addEventListener('click', () => downloadGroupedRuta(ruta, "FACTURA"));
+        card.querySelector('.dl-albaran').addEventListener('click', () => downloadGroupedRuta(ruta, "ALBARAN"));
+
         routesContainer.appendChild(card);
+
 
         const tbody = card.querySelector('tbody');
         idxs.forEach(i => {
           const row = rows[i];
           const tr = document.createElement('tr');
           tr.dataset.idx = i;
-          tr.innerHTML = `<td>${escapeHtml(row.Transportista)}</td>
-                          <td>${escapeHtml(row.Identificador)}</td>
-                          <td>${escapeHtml(row.Representante)}</td>
-                          <td><span class="status ${row.uploaded ? 'ok' : 'missing'}">${row.uploaded ? 'Subida' : 'Pendiente'}</span></td>`;
+          tr.innerHTML = `
+            <td>${escapeHtml(row.Transportista)}</td>
+            <td>${escapeHtml(row.Identificador)}</td>
+            <td>${escapeHtml(row.Representante)}</td>
+            <td><span class="status ${row.uploadedFactura ? 'ok' : 'missing'}">${row.uploadedFactura ? '✅ Subida' : '⏳ Pendiente'}</span></td>
+            <td><span class="status ${row.uploadedAlbaran ? 'ok' : 'missing'}">${row.uploadedAlbaran ? '✅ Subida' : '⏳ Pendiente'}</span></td>`;
           tbody.appendChild(tr);
         });
 
@@ -177,19 +328,19 @@
     }
 
     // Drag & drop
-    dropzone.addEventListener('click', ()=> pdfFileInput.click());
-    ['dragenter','dragover'].forEach(e => dropzone.addEventListener(e, (ev)=>{ev.preventDefault();dropzone.classList.add('dragover')}));
-    ['dragleave','drop'].forEach(e => dropzone.addEventListener(e, (ev)=>{ev.preventDefault();dropzone.classList.remove('dragover')}));
-    dropzone.addEventListener('drop', (ev)=>{handleFiles(ev.dataTransfer.files)});
-    pdfFileInput.addEventListener('change', (e)=> handleFiles(e.target.files));
+    dropzone.addEventListener('click', () => pdfFileInput.click());
+    ['dragenter', 'dragover'].forEach(e => dropzone.addEventListener(e, (ev) => { ev.preventDefault(); dropzone.classList.add('dragover') }));
+    ['dragleave', 'drop'].forEach(e => dropzone.addEventListener(e, (ev) => { ev.preventDefault(); dropzone.classList.remove('dragover') }));
+    dropzone.addEventListener('drop', (ev) => { handleFiles(ev.dataTransfer.files) });
+    pdfFileInput.addEventListener('change', (e) => handleFiles(e.target.files));
 
-    async function handleFiles(fileList){
+    async function handleFiles(fileList) {
       const files = Array.from(fileList).filter(f => f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'));
-      if(files.length===0) return alert('No se detectaron PDFs');
-      for(const f of files){
-        try{
+      if (files.length === 0) return alert('No se detectaron PDFs');
+      for (const f of files) {
+        try {
           await processPdfFile(f);
-        }catch(err){
+        } catch (err) {
           console.error('Error procesando PDF', f.name, err);
           alert('Error procesando PDF: ' + f.name + ' — ver consola');
         }
@@ -197,108 +348,130 @@
       updateTablesUI();
     }
 
-    async function processPdfFile(file){
+    async function processPdfFile(file) {
       const arrayBuffer = await file.arrayBuffer();
 
       // 1) Extraer texto con pdf.js para buscar identificadores
-      const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
       let fullText = '';
-      for(let p=1;p<=pdf.numPages;p++){
+      for (let p = 1; p <= pdf.numPages; p++) {
         const page = await pdf.getPage(p);
         const content = await page.getTextContent();
         const strings = content.items.map(i => i.str).join(' ');
         fullText += '\n' + strings;
       }
 
-      // 2) Buscamos si algún Identificador de la tabla está contenido en el texto
+      // 2)
+      // Detectar tipo de documento
+      let tipoDocumento = null;
+      if (fullText.includes("EFAC")) tipoDocumento = "FACTURA";
+      else if (fullText.includes("EALB")) tipoDocumento = "ALBARAN";
+
+      // Buscar identificadores
       let matchedIds = [];
       rows.forEach((r, idx) => {
-        if(!r.Identificador) return;
-        // comparaciones simples: exacto, mayúsc/minúsc y como parte
+        if (!r.Identificador) return;
         const id = String(r.Identificador).trim();
-        if(id && fullText.indexOf(id) !== -1){
-          matchedIds.push({id, idx});
+        if (id && fullText.includes(id)) {
+          matchedIds.push({ id, idx });
         }
       });
 
       // 3) Si se ha encontrado 1 o más identificadores, asociar el PDF (tras quitar última página) a las filas correspondientes.
       // Eliminamos la última página con pdf-lib
+      // Guardado con etiqueta
       const cleanedPdfBytes = await removeLastPage(arrayBuffer);
 
-      if(matchedIds.length===0){
-        // lo almacenamos con clave temporal (nombre) para revisión manual
+      if (matchedIds.length === 0) {
         const key = 'NO_MATCH_' + file.name + '_' + Date.now();
-        storedPdfs[key] = {originalName: file.name, bytes: cleanedPdfBytes};
-        console.log('PDF sin coincidencias guardado como', key);
+        storedPdfs[key] = { originalName: file.name, tipo: tipoDocumento || "DESCONOCIDO", bytes: cleanedPdfBytes };
+        console.log(`PDF sin coincidencias (${tipoDocumento || "DESCONOCIDO"}) guardado como`, key);
       } else {
-        for(const m of matchedIds){
-          rows[m.idx].uploaded = true;
-          rows[m.idx].pdfs.push({name: file.name, bytes: cleanedPdfBytes});
-          // opcionalmente indexar por identificador
+        for (const m of matchedIds) {
+          if (tipoDocumento === "FACTURA") {
+            rows[m.idx].uploadedFactura = true;
+            rows[m.idx].pdfsFactura.push({ name: file.name, bytes: cleanedPdfBytes });
+          } else if (tipoDocumento === "ALBARAN") {
+            rows[m.idx].uploadedAlbaran = true;
+            rows[m.idx].pdfsAlbaran.push({ name: file.name, bytes: cleanedPdfBytes });
+          }
           storedPdfs[rows[m.idx].Identificador] = storedPdfs[rows[m.idx].Identificador] || [];
-          storedPdfs[rows[m.idx].Identificador].push({name: file.name, bytes: cleanedPdfBytes});
+          storedPdfs[rows[m.idx].Identificador].push({ name: file.name, tipo: tipoDocumento || "DESCONOCIDO", bytes: cleanedPdfBytes });
         }
-        console.log('PDF asociado a ids:', matchedIds.map(x=>x.id));
+        console.log('PDF asociado a ids:', matchedIds.map(x => x.id), '— tipo:', tipoDocumento);
       }
     }
 
-    async function removeLastPage(arrayBuffer){
+    async function removeLastPage(arrayBuffer) {
       const { PDFDocument } = PDFLib;
       const src = await PDFDocument.load(arrayBuffer);
       const total = src.getPageCount();
-      if(total<=2){
+      if (total <= 2) {
         // si tiene una sola página, devolver el mismo documento (o vacío?) — aquí devolvemos original
         return await src.save();
       }
       const out = await PDFDocument.create();
-      const copied = await out.copyPages(src, Array.from({length: total-2}, (_,i)=>i));
+      const copied = await out.copyPages(src, Array.from({ length: total - 2 }, (_, i) => i));
       copied.forEach(p => out.addPage(p));
       return await out.save();
     }
 
-    function updateTablesUI(){
-      // actualizar estados en la tabla
-      document.querySelectorAll('table').forEach(tbl => {
-        const ruta = decodeURIComponent(tbl.dataset.ruta);
+    function updateTablesUI() {
+      document.querySelectorAll('table[data-ruta]').forEach(tbl => {
         const tbody = tbl.querySelector('tbody');
         tbody.querySelectorAll('tr').forEach(tr => {
-          const i = parseInt(tr.dataset.idx,10);
-          const st = tr.querySelector('.status');
-          if(rows[i].uploaded){ st.className = 'status ok'; st.textContent = 'Subida'; }
-          else { st.className = 'status missing'; st.textContent = 'Pendiente'; }
+          const i = parseInt(tr.dataset.idx, 10);
+          const r = rows[i];
+
+          const facturaCell = tr.children[3].querySelector('.status');
+          facturaCell.className = 'status ' + (r.uploadedFactura ? 'ok' : 'missing');
+          facturaCell.innerHTML = r.uploadedFactura
+            ? '✅ Subida'
+            : '⏳ Pendiente';
+
+          const albaranCell = tr.children[4].querySelector('.status');
+          albaranCell.className = 'status ' + (r.uploadedAlbaran ? 'ok' : 'missing');
+          albaranCell.innerHTML = r.uploadedAlbaran
+            ? '✅ Subida'
+            : '⏳ Pendiente';
         });
       });
     }
 
-    async function downloadGroupedRuta(ruta){
+
+    async function downloadGroupedRuta(ruta, mode = "ALL") {
       // reunir todos los PDFs asociados a filas de la ruta
       const idxs = routeMap.get(ruta) || [];
       const docsToMerge = [];
-      for(const i of idxs){
+      for (const i of idxs) {
         const r = rows[i];
-        // preferir pdfs associated to this row
-        for(const p of r.pdfs){ docsToMerge.push({bytes:p.bytes, sourceName:p.name}); }
+        if (mode === "ALL" || mode === "FACTURA") {
+          for (const p of r.pdfsFactura) { docsToMerge.push(p); }
+        }
+        if (mode === "ALL" || mode === "ALBARAN") {
+          for (const p of r.pdfsAlbaran) { docsToMerge.push(p); }
+        }
       }
 
-      if(docsToMerge.length===0){
+      if (docsToMerge.length === 0) {
         return alert('No hay facturas asignadas a esta ruta.');
       }
 
       const merged = await mergePdfsWithHeader(docsToMerge, ruta);
-      const blob = new Blob([merged], {type:'application/pdf'});
+      const blob = new Blob([merged], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url; a.download = `Facturas_Ruta_${sanitizeFilename(ruta)}.pdf`;
+      a.href = url; a.download = a.download = `Ruta_${sanitizeFilename(ruta)}_${mode}.pdf`;
       a.click();
       URL.revokeObjectURL(url);
     }
 
-    async function mergePdfsWithHeader(listOfPdfObjects, ruta){
+    async function mergePdfsWithHeader(listOfPdfObjects, ruta) {
       const { PDFDocument, StandardFonts } = PDFLib;
       const out = await PDFDocument.create();
       const helv = await out.embedFont(StandardFonts.Helvetica);
 
-      for(const item of listOfPdfObjects){
+      for (const item of listOfPdfObjects) {
         const src = await PDFDocument.load(item.bytes);
         const pages = await out.copyPages(src, src.getPageIndices());
         pages.forEach(p => out.addPage(p));
@@ -320,38 +493,38 @@
       return await out.save();
     }
 
-    function sanitizeFilename(s){
-      return s.replace(/[\\/:*?\"<>|]/g,'_');
+    function sanitizeFilename(s) {
+      return s.replace(/[\\/:*?\"<>|]/g, '_');
     }
 
-    function escapeHtml(s){
-      if(s==null) return '';
-      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    function escapeHtml(s) {
+      if (s == null) return '';
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
 
-    clearAll.addEventListener('click', ()=>{
-      if(confirm('Limpiar todo (tablas y datos almacenados en memoria)?')){
-        rows=[]; routeMap.clear(); storedPdfs={}; routesContainer.innerHTML=''; xlsxInput.value='';
+    clearAll.addEventListener('click', () => {
+      if (confirm('Limpiar todo (tablas y datos almacenados en memoria)?')) {
+        rows = []; routeMap.clear(); storedPdfs = {}; routesContainer.innerHTML = ''; xlsxInput.value = '';
       }
     });
 
-    exportAllMissing.addEventListener('click', ()=>{
+    exportAllMissing.addEventListener('click', () => {
       // crear CSV con filas pendientes
-      const pending = rows.filter(r=>!r.uploaded).map(r=>({Transportista:r.Transportista,Ruta:r.Ruta,Identificador:r.Identificador,Representante:r.Representante}));
-      if(pending.length===0) return alert('No hay pendientes.');
+      const pending = rows.filter(r => !r.uploaded).map(r => ({ Transportista: r.Transportista, Ruta: r.Ruta, Identificador: r.Identificador, Representante: r.Representante }));
+      if (pending.length === 0) return alert('No hay pendientes.');
       const csv = toCSV(pending);
-      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
       a.download = 'pendientes.csv';
       a.click();
     });
 
-    function toCSV(arr){
+    function toCSV(arr) {
       const keys = Object.keys(arr[0]);
       const lines = [keys.join(',')];
-      arr.forEach(o=>{
-        lines.push(keys.map(k=> '"'+String(o[k]).replace(/"/g,'""')+'"').join(','));
+      arr.forEach(o => {
+        lines.push(keys.map(k => '"' + String(o[k]).replace(/"/g, '""') + '"').join(','));
       });
       return lines.join('\n');
     }
@@ -361,5 +534,5 @@
 
   </script>
 </body>
-</html>
 
+</html>
