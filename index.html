@@ -132,15 +132,9 @@
       margin-right: 4px;
     }
 
-    .btn.ghost {
-      background: transparent;
-      color: #c53030;
-      border: 1px solid #f4c7c7;
-    }
-
-    .small {
+    .btn.small {
       font-size: 12px;
-      padding: 6px 8px
+      padding: 6px 8px;
     }
 
     .note {
@@ -160,14 +154,14 @@
   <div class="panel left">
     <label>1) Cargar archivo Excel (.xlsx)</label>
     <input id="xlsxInput" type="file" accept=".xlsx" />
-    <div class="note">Columnas necesarias: <b>Transportista, Ruta, Identificador de tarea, Representante del cliente</b></div>
+    <div class="note">Columnas: <b>Transportista, Ruta, Identificador de tarea, Representante del cliente</b></div>
 
-    <label style="margin-top:12px">2) Arrastra / selecciona tus PDF</label>
+    <label style="margin-top:12px">2) Arrastra o selecciona PDFs</label>
     <div id="dropzone" class="dropzone">Arrastra PDF aquí o haz click</div>
     <input id="pdfFileInput" type="file" accept="application/pdf" multiple style="display:none" />
 
     <label style="margin-top:12px">Acciones</label>
-    <button id="clearAll" class="btn ghost small">Limpiar Todo</button>
+    <button id="clearAll" class="btn small" style="background:#eee;color:#c53030;border:1px solid #f4c7c7">Limpiar Todo</button>
     <button id="exportAllMissing" class="btn small">Exportar Pendientes (XLSX)</button>
   </div>
 
@@ -179,81 +173,67 @@
 <script src="xlsx.full.min.js"></script>
 <script src="pdf-lib.min.js"></script>
 <script src="pdf.min.js"></script>
-
 <script>
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'pdf.worker.min.js';
 
-// Datos
 let rows = [];
 const routeMap = new Map();
-let storedPdfs = {};
 
-const xlsxInput = document.getElementById('xlsxInput');
-const dropzone = document.getElementById('dropzone');
-const pdfFileInput = document.getElementById('pdfFileInput');
-const routesContainer = document.getElementById('routesContainer');
+document.getElementById('xlsxInput').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const buffer = await file.arrayBuffer();
+  const workbook = XLSX.read(buffer, { type: 'array' });
+  const sheet = workbook.SheetNames[0];
+  const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheet], { defval: '' });
 
-// Cargar Excel
-xlsxInput.addEventListener('change', async (e) => {
-  const f = e.target.files[0];
-  if (!f) return;
-  const data = await f.arrayBuffer();
-  const wb = XLSX.read(data, { type: 'array' });
-  const sheet = wb.SheetNames[0];
-  const aoa = XLSX.utils.sheet_to_json(wb.Sheets[sheet], { defval: '' });
-  processExcelRows(aoa);
-});
-
-function processExcelRows(aoa) {
   rows = [];
   routeMap.clear();
-  storedPdfs = {};
-  routesContainer.innerHTML = '';
 
-  aoa.forEach((r) => {
-    const item = {
-      Transportista: r['Transportista'],
-      Ruta: r['Ruta'],
-      Identificador: String(r['Identificador de tarea']).trim(),
-      Representante: r['Representante del cliente'],
+  data.forEach(r => {
+    const obj = {
+      Transportista: r["Transportista"],
+      Ruta: r["Ruta"],
+      Identificador: String(r["Identificador de tarea"]).trim(),
+      Representante: r["Representante del cliente"],
       uploaded: false,
       pdfs: []
     };
-    rows.push(item);
-    if (!routeMap.has(item.Ruta)) routeMap.set(item.Ruta, []);
-    routeMap.get(item.Ruta).push(rows.length - 1);
+    rows.push(obj);
+    if (!routeMap.has(obj.Ruta)) routeMap.set(obj.Ruta, []);
+    routeMap.get(obj.Ruta).push(rows.length - 1);
   });
 
   renderRouteTables();
-}
+});
 
 function renderRouteTables() {
   routesContainer.innerHTML = '';
   for (const [ruta, idxs] of routeMap.entries()) {
+    const t = rows[idxs[0]].Transportista;
     const card = document.createElement('div');
     card.className = 'route-card';
     card.innerHTML = `
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <strong>Ruta: ${ruta}</strong>
+        <strong>${t} — Ruta: ${ruta}</strong>
         <button class="btn small dl-all" data-ruta="${encodeURIComponent(ruta)}">Descargar Ruta PDF</button>
       </div>
-      <table data-ruta="${encodeURIComponent(ruta)}">
-        <thead><tr><th>Transportista</th><th>Identificador</th><th>Representante</th><th>Factura</th></tr></thead>
+      <table>
+        <thead><tr><th>Identificador</th><th>Representante</th><th>Factura</th></tr></thead>
         <tbody></tbody>
       </table>
     `;
     routesContainer.appendChild(card);
-    const tbody = card.querySelector('tbody');
 
+    const tbody = card.querySelector("tbody");
     idxs.forEach(i => {
-      const row = rows[i];
-      const tr = document.createElement('tr');
+      const r = rows[i];
+      const tr = document.createElement("tr");
       tr.dataset.idx = i;
       tr.innerHTML = `
-        <td>${row.Transportista}</td>
-        <td>${row.Identificador}</td>
-        <td>${row.Representante}</td>
-        <td><span class="status ${row.uploaded ? 'ok' : 'missing'}">${row.uploaded ? '✅ Subida' : '⏳ Pendiente'}</span></td>
+        <td>${r.Identificador}</td>
+        <td>${r.Representante}</td>
+        <td><span class="status ${r.uploaded ? "ok" : "missing"}">${r.uploaded ? "✅ Subida" : "⏳ Pendiente"}</span></td>
       `;
       tbody.appendChild(tr);
     });
@@ -263,10 +243,13 @@ function renderRouteTables() {
   }
 }
 
-// Drag & Drop
+// Drag & drop PDF
+const dropzone = document.getElementById('dropzone');
+const pdfFileInput = document.getElementById('pdfFileInput');
+
 dropzone.addEventListener('click', () => pdfFileInput.click());
 dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
-dropzone.addEventListener('dragleave', e => dropzone.classList.remove('dragover'));
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
 dropzone.addEventListener('drop', e => { e.preventDefault(); dropzone.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
 pdfFileInput.addEventListener('change', e => handleFiles(e.target.files));
 
@@ -280,17 +263,18 @@ async function processPdf(file) {
   const buffer = await file.arrayBuffer();
   const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
 
-  let text = '';
+  let text = "";
   for (let p = 1; p <= pdf.numPages; p++) {
     const page = await pdf.getPage(p);
-    const content = await page.getTextContent();
-    text += content.items.map(i => i.str).join(' ') + '\n';
+    const c = await page.getTextContent();
+    text += c.items.map(i => i.str).join(" ") + "\n";
   }
 
   const matches = rows.map((r, i) => text.includes(r.Identificador) ? i : -1).filter(i => i !== -1);
   if (!matches.length) return;
 
   const cleaned = await removeLastTwoPages(buffer);
+
   matches.forEach(i => {
     rows[i].uploaded = true;
     rows[i].pdfs.push({ name: file.name, bytes: cleaned });
@@ -316,7 +300,6 @@ function updateTablesUI() {
   });
 }
 
-// Descargar agrupado
 async function downloadGroupedRuta(ruta) {
   const { PDFDocument, StandardFonts } = PDFLib;
   const idxs = routeMap.get(ruta) || [];
@@ -334,33 +317,31 @@ async function downloadGroupedRuta(ruta) {
     pages.forEach(p => out.addPage(p));
   }
 
-  out.getPages().forEach(page => {
-    page.drawText(ruta, { x: 20, y: page.getHeight() - 40, size: 32, font: font, opacity: 0.85 });
+  out.getPages().forEach(p => {
+    p.drawText(ruta, { x: 20, y: p.getHeight() - 40, size: 32, font, opacity: 0.85 });
   });
 
   const pdf = await out.save();
-  const url = URL.createObjectURL(new Blob([pdf], { type: 'application/pdf' }));
-  const a = Object.assign(document.createElement('a'), { href: url, download: `RUTA_${ruta}.pdf` });
+  const url = URL.createObjectURL(new Blob([pdf], { type: "application/pdf" }));
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `RUTA_${ruta}.pdf`;
   a.click();
   URL.revokeObjectURL(url);
 }
 
-// Exportar pendientes
 document.getElementById('exportAllMissing').addEventListener('click', () => {
   const pending = rows.filter(r => !r.uploaded);
   if (!pending.length) return alert("No hay pendientes.");
-
   const sheet = XLSX.utils.json_to_sheet(pending);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, sheet, "Pendientes");
   XLSX.writeFile(wb, "pendientes_facturas.xlsx");
 });
 
-// Limpiar
 document.getElementById('clearAll').addEventListener('click', () => {
   if (confirm("¿Seguro? Esto vacía todo.")) location.reload();
 });
 </script>
-
 </body>
 </html>
