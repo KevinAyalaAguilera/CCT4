@@ -154,7 +154,7 @@
   <div class="panel left">
     <label>1) Cargar archivo Excel (.xlsx)</label>
     <input id="xlsxInput" type="file" accept=".xlsx" />
-    <div class="note">Columnas: <b>Transportista, Ruta, Identificador de tarea, Representante del cliente</b></div>
+    <div class="note">Columnas: <b>Transportista, Ruta, Identificador de tarea, Representante del cliente, Tipo de servicio, Expedidor</b></div>
 
     <label style="margin-top:12px">2) Arrastra o selecciona PDFs</label>
     <div id="dropzone" class="dropzone">Arrastra PDF aquí o haz click</div>
@@ -196,9 +196,12 @@ document.getElementById('xlsxInput').addEventListener('change', async (e) => {
       Ruta: r["Ruta"],
       Identificador: String(r["Identificador de tarea"]).trim(),
       Representante: r["Representante del cliente"],
+      TipoServicio: (r["Tipo de servicio"] || "").toLowerCase(),
+      Expedidor: r["Expedidor"] || "",
       uploaded: false,
       pdfs: []
     };
+
     rows.push(obj);
     if (!routeMap.has(obj.Ruta)) routeMap.set(obj.Ruta, []);
     routeMap.get(obj.Ruta).push(rows.length - 1);
@@ -219,7 +222,7 @@ function renderRouteTables() {
         <button class="btn small dl-all" data-ruta="${encodeURIComponent(ruta)}">Descargar Ruta PDF</button>
       </div>
       <table>
-        <thead><tr><th>Identificador</th><th>Representante</th><th>Factura</th></tr></thead>
+        <thead><tr><th>Identificador</th><th>Representante</th><th>Expedidor</th><th>Factura</th></tr></thead>
         <tbody></tbody>
       </table>
     `;
@@ -230,9 +233,11 @@ function renderRouteTables() {
       const r = rows[i];
       const tr = document.createElement("tr");
       tr.dataset.idx = i;
+      const isRMA = r.TipoServicio === "recogida";
       tr.innerHTML = `
-        <td>${r.Identificador}</td>
+        <td>${r.Identificador}${isRMA ? " <strong>(RMA)</strong>" : ""}</td>
         <td>${r.Representante}</td>
+        <td>${r.Expedidor}</td>
         <td><span class="status ${r.uploaded ? "ok" : "missing"}">${r.uploaded ? "✅ Subida" : "⏳ Pendiente"}</span></td>
       `;
       tbody.appendChild(tr);
@@ -317,9 +322,19 @@ async function downloadGroupedRuta(ruta) {
     pages.forEach(p => out.addPage(p));
   }
 
-  out.getPages().forEach(p => {
-    p.drawText(ruta, { x: 20, y: p.getHeight() - 40, size: 32, font, opacity: 0.85 });
+out.getPages().forEach((p, pageIndex) => {
+  const firstRow = rows[idxs[0]];
+  const infoText = `Ruta: ${ruta} — Transportista: ${firstRow.Transportista} — Expedidor: ${firstRow.Expedidor}`;
+
+  p.drawText(infoText, {
+    x: 20,
+    y: p.getHeight() - 40,
+    size: 18,
+    font,
+    opacity: 0.85
   });
+});
+
 
   const pdf = await out.save();
   const url = URL.createObjectURL(new Blob([pdf], { type: "application/pdf" }));
