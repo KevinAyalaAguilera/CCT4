@@ -1,154 +1,44 @@
 <!doctype html>
 <html lang="es">
-
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Control de facturas por Ruta</title>
-
+  <title>Control de facturas por Ruta — v2</title>
   <style>
-    :root {
-      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-    }
+    :root { font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial; }
+    body { margin: 0; background:#f5f7fb; color:#111; }
+    header { background:#c53030; color:#fff; padding:18px 24px; border-bottom:4px solid rgba(0,0,0,0.06);}    
 
-    body {
-      margin: 0;
-      background: #f5f7fb;
-      color: #111;
-    }
+    .container { display:flex; gap:18px; padding:18px; max-width:1400px; margin:20px auto }
+    .panel { background:#fff; border-radius:12px; padding:16px; box-shadow:0 6px 18px rgba(16,24,40,0.06); flex:1 }
+    .left { min-width:350px; max-width:480px }
 
-    header {
-      background: #c53030;
-      color: #fff;
-      padding: 18px 24px;
-      border-bottom: 4px solid rgba(0, 0, 0, 0.06)
-    }
+    /* Dropzone más grande y visible */
+    .dropzone { margin-top:10px; padding:42px; border:2px dashed #cbd5e1; border-radius:10px; text-align:center; color:#64748b; cursor:pointer; font-size:18px; background:#fff; }
+    .dropzone.dragover { background:#fff0f0; border-color:#c53030; color:#2b2b2b }
 
-    .container {
-      display: flex;
-      gap: 18px;
-      padding: 18px;
-      max-width: 1400px;
-      margin: 20px auto
-    }
+    .route-card { border:1px solid #f2d6d6; padding:14px; border-radius:8px; margin-bottom:12px }
 
-    .panel {
-      background: #fff;
-      border-radius: 12px;
-      padding: 16px;
-      box-shadow: 0 6px 18px rgba(16, 24, 40, 0.06);
-      flex: 1
-    }
+    table { width:100%; border-collapse:collapse; margin-top:6px; font-size:13px; }
+    th,td { padding:8px 10px; border-bottom:1px solid #eee; text-align:left; }
 
-    .left {
-      min-width: 350px;
-      max-width: 420px
-    }
+    .btn { padding:8px 12px; border-radius:8px; background:#c53030; color:#fff; border:none; cursor:pointer; font-size:13px; }
+    .btn.small { font-size:12px; padding:6px 8px; }
+    .btn.gray { background:#71717a; }
+    .btn.danger { background:#dc2626; }
 
-    h1 {
-      margin: 0 0 6px;
-      font-size: 18px
-    }
+    .factura-chip { display:flex; gap:6px; margin-top:6px; align-items:center; }
+    .factura-chip span { font-size:12px; background:#eef2ff; padding:4px 8px; border-radius:8px; }
 
-    label {
-      display: block;
-      margin-top: 8px;
-      font-size: 13px
-    }
+    /* Pedido resaltado si tiene facturas */
+    tr.pedido-con-facturas td { background:#f0fdf4; }
+    tr.pedido-con-facturas td:first-child { border-left:4px solid #34d399; }
 
-    input[type=file] {
-      margin-top: 6px
-    }
-
-    .dropzone {
-      margin-top: 10px;
-      padding: 18px;
-      border: 2px dashed #cbd5e1;
-      border-radius: 8px;
-      text-align: center;
-      color: #64748b;
-      cursor: pointer
-    }
-
-    .dropzone.dragover {
-      background: #ffecec;
-      border-color: #c53030;
-      color: #2b2b2b
-    }
-
-    #routesContainer {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .route-card {
-      border: 1px solid #f2d6d6;
-      padding: 14px;
-      border-radius: 8px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 6px;
-      font-size: 13px;
-    }
-
-    th,
-    td {
-      padding: 6px 8px;
-      border-bottom: 1px solid #eee;
-      text-align: left;
-    }
-
-    .status {
-      display: inline-block;
-      padding: 6px 10px;
-      border-radius: 6px;
-      font-size: 12px
-    }
-
-    .status.missing {
-      background: #fff4e6;
-      color: #b45309;
-      border: 1px solid #fde3b7
-    }
-
-    .status.ok {
-      background: #ecfdf5;
-      color: #065f46;
-      border: 1px solid #bbf7d0
-    }
-
-    .btn {
-      padding: 8px 12px;
-      border-radius: 8px;
-      background: #c53030;
-      color: #fff;
-      border: none;
-      cursor: pointer;
-      font-size: 13px;
-      margin-right: 4px;
-    }
-
-    .btn.small {
-      font-size: 12px;
-      padding: 6px 8px;
-    }
-
-    .note {
-      font-size: 13px;
-      color: #374151
-    }
+    .note { font-size:13px; color:#374151 }
   </style>
 </head>
-
 <body>
-
-<header>
-  <h1>Control de Facturas por Ruta — Subir, Comprobar y Agrupar</h1>
-</header>
+<header><h1>Control de Facturas por Ruta — v2</h1></header>
 
 <div class="container">
   <div class="panel left">
@@ -157,12 +47,11 @@
     <div class="note">Columnas: <b>Transportista, Ruta, Identificador de tarea, Representante del cliente, Tipo de servicio, Expedidor</b></div>
 
     <label style="margin-top:12px">2) Arrastra o selecciona PDFs</label>
-    <div id="dropzone" class="dropzone">Arrastra PDF aquí o haz click</div>
+    <div id="dropzone" class="dropzone">Arrastra PDFs aquí o haz click para seleccionar (múltiple)</div>
     <input id="pdfFileInput" type="file" accept="application/pdf" multiple style="display:none" />
 
     <label style="margin-top:12px">Acciones</label>
     <button id="clearAll" class="btn small" style="background:#eee;color:#c53030;border:1px solid #f4c7c7">Limpiar Todo</button>
-    <button id="exportAllMissing" class="btn small">Exportar Pendientes (XLSX)</button>
   </div>
 
   <div class="panel" id="mainPanel">
@@ -174,81 +63,145 @@
 <script src="pdf-lib.min.js"></script>
 <script src="pdf.min.js"></script>
 <script>
+// worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'pdf.worker.min.js';
 
+// Datos
 let rows = [];
 const routeMap = new Map();
+const globalInvoiceSet = new Set(); // evita duplicados por número de factura
 
-document.getElementById('xlsxInput').addEventListener('change', async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
+// Extrae número de factura: busca "Número" seguido de texto (ajustable)
+function extractInvoiceNumber(text){
+  // Buscamos "Número" y capturamos el siguiente token (número/identificador).
+  // Si vuestros PDFs usan otro patrón (p. ej. "Nº" o "Factura"), ajustar regex.
+  const regex = /Número\s*[:\-]?\s*([A-Za-z0-9\-\/]+)/i;
+  const m = text.match(regex);
+  return m ? m[1].trim() : null;
+}
+
+// Leer XLSX
+document.getElementById('xlsxInput').addEventListener('change', async (e)=>{
+  const file = e.target.files[0]; if(!file) return;
   const buffer = await file.arrayBuffer();
-  const workbook = XLSX.read(buffer, { type: 'array' });
-  const sheet = workbook.SheetNames[0];
-  const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheet], { defval: '' });
+  const wb = XLSX.read(buffer,{type:'array'});
+  const sheet = wb.SheetNames[0];
+  const data = XLSX.utils.sheet_to_json(wb.Sheets[sheet],{defval:''});
 
   rows = [];
   routeMap.clear();
 
-  data.forEach(r => {
+  data.forEach(r=>{
     const obj = {
-      Transportista: r["Transportista"],
-      Ruta: r["Ruta"],
-      Identificador: String(r["Identificador de tarea"]).trim(),
-      Representante: r["Representante del cliente"],
-      TipoServicio: (r["Tipo de servicio"] || "").toLowerCase(),
-      Expedidor: r["Expedidor"] || "",
-      uploaded: false,
-      pdfs: []
+      Transportista: r['Transportista'] || '',
+      Ruta: r['Ruta'] || '',
+      Identificador: String(r['Identificador de tarea'] || '').trim(),
+      Representante: r['Representante del cliente'] || '',
+      TipoServicio: (r['Tipo de servicio'] || '').toLowerCase(),
+      Expedidor: r['Expedidor'] || '',
+      pdfs: [] // cada pdf: { name, bytes, invoiceNumber }
     };
-
     rows.push(obj);
-    if (!routeMap.has(obj.Ruta)) routeMap.set(obj.Ruta, []);
+    if(!routeMap.has(obj.Ruta)) routeMap.set(obj.Ruta, []);
     routeMap.get(obj.Ruta).push(rows.length - 1);
   });
 
   renderRouteTables();
 });
 
-function renderRouteTables() {
-  routesContainer.innerHTML = '';
-  for (const [ruta, idxs] of routeMap.entries()) {
-    const t = rows[idxs[0]].Transportista;
+function renderRouteTables(){
+  const rc = document.getElementById('routesContainer');
+  rc.innerHTML = '';
+
+  for(const [ruta, idxs] of routeMap.entries()){
+    const transportista = rows[idxs[0]].Transportista || '';
     const card = document.createElement('div');
     card.className = 'route-card';
+
     card.innerHTML = `
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <strong>${t} — Ruta: ${ruta}</strong>
-        <button class="btn small dl-all" data-ruta="${encodeURIComponent(ruta)}">Descargar Ruta PDF</button>
+        <strong>${transportista} — Ruta: ${ruta}</strong>
+        <div>
+          <button class="btn small dl-all" data-ruta="${encodeURIComponent(ruta)}">Descargar Ruta PDF</button>
+        </div>
       </div>
       <table>
-        <thead><tr><th>Identificador</th><th>Representante</th><th>Expedidor</th><th>Factura</th></tr></thead>
+        <thead><tr><th>ID tarea</th><th>Representante</th><th>Expedidor</th><th>Facturas</th></tr></thead>
         <tbody></tbody>
       </table>
     `;
-    routesContainer.appendChild(card);
 
-    const tbody = card.querySelector("tbody");
+    const tbody = card.querySelector('tbody');
     idxs.forEach(i => {
       const r = rows[i];
-      const tr = document.createElement("tr");
+      const tr = document.createElement('tr');
       tr.dataset.idx = i;
-      const isRMA = r.TipoServicio === "recogida";
+
       tr.innerHTML = `
-        <td>${r.Identificador}${isRMA ? " <strong>(RMA)</strong>" : ""}</td>
-        <td>${r.Representante}</td>
-        <td>${r.Expedidor}</td>
-        <td><span class="status ${r.uploaded ? "ok" : "missing"}">${r.uploaded ? "✅ Subida" : "⏳ Pendiente"}</span></td>
+        <td>${escapeHtml(r.Identificador)}${r.TipoServicio === 'recogida' ? ' <strong>(RMA)</strong>' : ''}</td>
+        <td>${escapeHtml(r.Representante)}</td>
+        <td>${escapeHtml(r.Expedidor)}</td>
+        <td class="facturas-cell"></td>
       `;
+
       tbody.appendChild(tr);
     });
 
-    card.querySelector('.dl-all')
-      .addEventListener('click', () => downloadGroupedRuta(ruta));
+    rc.appendChild(card);
   }
+
+  // conectar botón descargar por ruta
+  document.querySelectorAll('.dl-all').forEach(b => b.onclick = () => downloadGroupedRuta(decodeURIComponent(b.dataset.ruta)));
+
+  updateTablesUI();
 }
 
-// Drag & drop PDF
+function refreshFacturaList(tr){
+  const idx = Number(tr.dataset.idx);
+  const cell = tr.querySelector('.facturas-cell');
+  const r = rows[idx];
+  cell.innerHTML = '';
+
+  // si no hay facturas, mostrar texto pequeño
+  if(r.pdfs.length === 0){
+    cell.innerHTML = '<span style="color:#6b7280;font-size:13px">— Sin facturas —</span>';
+    return;
+  }
+
+  r.pdfs.forEach((p, i) => {
+    const div = document.createElement('div');
+    div.className = 'factura-chip';
+    div.innerHTML = `
+      <span>Factura: ${escapeHtml(p.invoiceNumber || p.name)}</span>
+      <button class="btn small gray" data-preview="${i}">👁️</button>
+      <button class="btn small danger" data-delete="${i}">🗑️</button>
+    `;
+    cell.appendChild(div);
+
+    div.querySelector('[data-preview]').onclick = () => {
+      const url = URL.createObjectURL(new Blob([p.bytes], { type: 'application/pdf' }));
+      window.open(url, '_blank');
+    };
+
+    div.querySelector('[data-delete]').onclick = () => {
+      // eliminar factura y liberar número si está registrado
+      const removed = r.pdfs.splice(i, 1)[0];
+      if(removed && removed.invoiceNumber) globalInvoiceSet.delete(removed.invoiceNumber);
+      updateTablesUI();
+    };
+  });
+}
+
+function updateTablesUI(){
+  document.querySelectorAll('tbody tr').forEach(tr => {
+    refreshFacturaList(tr);
+    const idx = Number(tr.dataset.idx);
+    if(rows[idx].pdfs.length > 0) tr.classList.add('pedido-con-facturas');
+    else tr.classList.remove('pedido-con-facturas');
+  });
+}
+
+// Drag & drop
 const dropzone = document.getElementById('dropzone');
 const pdfFileInput = document.getElementById('pdfFileInput');
 
@@ -258,86 +211,89 @@ dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover
 dropzone.addEventListener('drop', e => { e.preventDefault(); dropzone.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
 pdfFileInput.addEventListener('change', e => handleFiles(e.target.files));
 
-async function handleFiles(files) {
+async function handleFiles(files){
   files = [...files].filter(f => f.type === 'application/pdf');
-  for (const f of files) await processPdf(f);
+  for(const f of files) await processPdf(f);
   updateTablesUI();
 }
 
-async function processPdf(file) {
-  const buffer = await file.arrayBuffer();
-  const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
+async function processPdf(file){
+  try{
+    const buffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
+    let text = '';
+    for(let p = 1; p <= pdf.numPages; p++){
+      const page = await pdf.getPage(p);
+      const c = await page.getTextContent();
+      text += c.items.map(i => i.str).join(' ') + '\n';
+    }
 
-  let text = "";
-  for (let p = 1; p <= pdf.numPages; p++) {
-    const page = await pdf.getPage(p);
-    const c = await page.getTextContent();
-    text += c.items.map(i => i.str).join(" ") + "\n";
+    const invoiceNumber = extractInvoiceNumber(text);
+    if(!invoiceNumber){
+      alert(`No se encontró número de factura en ${file.name}. Se omite.`);
+      return;
+    }
+
+    if(globalInvoiceSet.has(invoiceNumber)){
+      alert(`Factura duplicada detectada: ${invoiceNumber} — fichero: ${file.name}`);
+      return;
+    }
+
+    // buscar coincidencias por Identificador en el texto
+    const matches = rows.map((r, i) => text.includes(String(r.Identificador)) ? i : -1).filter(i => i !== -1);
+    if(matches.length === 0){
+      alert(`PDF ${file.name} no coincide con ningún identificador.`);
+      return;
+    }
+
+    const cleaned = await removeLastTwoPages(buffer);
+
+    globalInvoiceSet.add(invoiceNumber);
+    matches.forEach(i => {
+      rows[i].pdfs.push({ name: file.name, bytes: cleaned, invoiceNumber });
+    });
+
+  }catch(err){
+    console.error('Error procesando PDF', err);
+    alert('Error leyendo PDF ' + file.name);
   }
-
-  const matches = rows.map((r, i) => text.includes(r.Identificador) ? i : -1).filter(i => i !== -1);
-  if (!matches.length) return;
-
-  const cleaned = await removeLastTwoPages(buffer);
-
-  matches.forEach(i => {
-    rows[i].uploaded = true;
-    rows[i].pdfs.push({ name: file.name, bytes: cleaned });
-  });
 }
 
-async function removeLastTwoPages(buffer) {
+async function removeLastTwoPages(buffer){
   const { PDFDocument } = PDFLib;
   const src = await PDFDocument.load(buffer);
   const count = src.getPageCount();
   const out = await PDFDocument.create();
-  const pages = await out.copyPages(src, Array.from({ length: Math.max(count - 2, 1) }, (_, i) => i));
+  const copyCount = Math.max(count - 2, 1);
+  const pages = await out.copyPages(src, Array.from({ length: copyCount }, (_, i) => i));
   pages.forEach(p => out.addPage(p));
   return await out.save();
 }
 
-function updateTablesUI() {
-  document.querySelectorAll('tbody tr').forEach(tr => {
-    const i = tr.dataset.idx;
-    const cell = tr.querySelector('.status');
-    cell.className = 'status ' + (rows[i].uploaded ? 'ok' : 'missing');
-    cell.textContent = rows[i].uploaded ? '✅ Subida' : '⏳ Pendiente';
-  });
-}
-
-async function downloadGroupedRuta(ruta) {
-  const { PDFDocument, StandardFonts } = PDFLib;
+// Descargar grouped ruta (concatena todas las facturas de la ruta)
+async function downloadGroupedRuta(ruta){
   const idxs = routeMap.get(ruta) || [];
   const docs = [];
   idxs.forEach(i => rows[i].pdfs.forEach(p => docs.push(p.bytes)));
+  if(docs.length === 0){ alert('Esta ruta no tiene facturas cargadas.'); return; }
 
-  if (!docs.length) return alert("Esta ruta no tiene facturas cargadas.");
-
+  const { PDFDocument, StandardFonts } = PDFLib;
   const out = await PDFDocument.create();
-  const font = await out.embedFont(StandardFonts.HelveticaBold);
+  const font = await out.embedFont(StandardFonts.Helvetica);
 
-  for (const bytes of docs) {
+  for(const bytes of docs){
     const src = await PDFDocument.load(bytes);
     const pages = await out.copyPages(src, src.getPageIndices());
     pages.forEach(p => out.addPage(p));
   }
 
-out.getPages().forEach((p, pageIndex) => {
-  const firstRow = rows[idxs[0]];
-  const infoText = `Ruta: ${ruta} — Transportista: ${firstRow.Transportista} — Expedidor: ${firstRow.Expedidor}`;
-
-  p.drawText(infoText, {
-    x: 20,
-    y: p.getHeight() - 40,
-    size: 12,
-    font,
-    opacity: 0.85
+  // Añadir cabecera simple en cada página
+  out.getPages().forEach((p, pi) => {
+    p.drawText(`Ruta: ${ruta}`, { x: 20, y: p.getHeight() - 28, size: 10, font });
   });
-});
-
 
   const pdf = await out.save();
-  const url = URL.createObjectURL(new Blob([pdf], { type: "application/pdf" }));
+  const url = URL.createObjectURL(new Blob([pdf], { type: 'application/pdf' }));
   const a = document.createElement('a');
   a.href = url;
   a.download = `RUTA_${ruta}.pdf`;
@@ -345,18 +301,15 @@ out.getPages().forEach((p, pageIndex) => {
   URL.revokeObjectURL(url);
 }
 
-document.getElementById('exportAllMissing').addEventListener('click', () => {
-  const pending = rows.filter(r => !r.uploaded);
-  if (!pending.length) return alert("No hay pendientes.");
-  const sheet = XLSX.utils.json_to_sheet(pending);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, sheet, "Pendientes");
-  XLSX.writeFile(wb, "pendientes_facturas.xlsx");
-});
+// utilidad: escapar HTML minimal
+function escapeHtml(s){
+  if(!s) return '';
+  return String(s).replace(/[&<>\"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c] || c));
+}
 
-document.getElementById('clearAll').addEventListener('click', () => {
-  if (confirm("¿Seguro? Esto vacía todo.")) location.reload();
-});
+// Limpiar todo
+document.getElementById('clearAll').onclick = () => { if(confirm('¿Seguro? Esto vacía todo.')) location.reload(); };
+
 </script>
 </body>
 </html>
